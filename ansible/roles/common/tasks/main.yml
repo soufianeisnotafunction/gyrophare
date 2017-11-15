@@ -1,0 +1,32 @@
+---
+
+- name: Remove sshpwd.sh
+  file:
+    path: /etc/profile.d/sshpwd.sh
+    state: absent
+
+- name: Add ssh to systemd
+  systemd:
+    name: ssh
+    enabled: yes
+    masked: no
+
+- name: Update all packages to the latest version
+  apt:
+    update_cache: yes
+
+- name: Install Packages
+  apt: name={{ item }} update_cache=yes state=latest
+  with_items:
+    - build-essential
+    - npm
+    - nodejs
+
+- name: Create /usr/bin/node link
+  file:
+    src: /usr/bin/nodejs
+    dest: /usr/bin/node
+    state: link
+
+- name: Run node.js task
+  include_tasks: nodejs.yml

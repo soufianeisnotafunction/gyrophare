@@ -1,0 +1,39 @@
+---
+
+- name: Install "pm2" node.js package globally
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+
+- name: Copy Gyrophare source
+  copy:
+    src: ./../src/
+    dest: /var/gyrophare
+
+- name: Install Gyrophare dependencies
+  npm:
+    path: /var/gyrophare
+    state: present
+
+- name: Create pm2 service
+  command: 'pm2 startup'
+
+- name: Enable pm2 service
+  systemd:
+    name: pm2-root
+    enabled: yes
+    state: started
+
+- name: Start pm2 service
+  systemd:
+    name: pm2-root
+    state: started
+
+- name: Start gyrophare
+  command: npm run start-prod
+  args:
+    chdir: /var/gyrophare
+
+- name: Save pm2 process list
+  command: pm2 save

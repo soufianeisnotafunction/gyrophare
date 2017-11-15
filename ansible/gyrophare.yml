@@ -1,0 +1,9 @@
+---
+
+- hosts: raspberries
+  remote_user: gekko
+  become: yes
+  become_method: su
+
+  roles:
+    - common
