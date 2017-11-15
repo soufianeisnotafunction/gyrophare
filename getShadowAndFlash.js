@@ -4,7 +4,7 @@ var aws = require("aws-sdk");
 aws.config.update({
 	region: "eu-west-1"
 });
-const thingEndpoint = "a35ua82z0kqvds.iot.eu-west-1.amazonaws.com";
+const thingEndpoint = "a3e6rc2fumc5un.iot.eu-west-1.amazonaws.com";
 const thingName = "gyrophare";
 
 const iotdata = new aws.IotData({
