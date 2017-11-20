@@ -7,6 +7,6 @@ exports.config = {
     AWS_REGION: "eu-west-1",
     THING_ENDPOINT: "a3e6rc2fumc5un.iot.eu-west-1.amazonaws.com",
     THING_NAME: "gyrophare",
-    DELAY_SHUTDOWN_FLASH: 6000,
-    DELAY_POLLING: 5000
+    DELAY_SHUTDOWN_FLASH: 1000 * 120,
+    DELAY_POLLING: 10000
 };

@@ -1,16 +1,16 @@
 const config = require('./config').config;
 
+const isRPi = process.env.IS_RPI || true;
+const thingEndpoint = config.THING_ENDPOINT;
+const thingName = config.THING_NAME;
+
 const Gpio = require('onoff').Gpio;
 const aws = require("aws-sdk");
-const isRPi = process.env.IS_RPI || true;
 
 if (isRPi === true) {
 	const gyrophare = new Gpio(config.GPIO_FLASH, 'out')
 	gyrophare.writeSync(config.STATE_OFF);
 }
-
-const thingEndpoint = config.THING_ENDPOINT;
-const thingName = config.THING_NAME;
 
 process.env.AWS_ACCESS_KEY_ID = config.AWS_ACCESS_KEY_ID;
 process.env.AWS_SECRET_ACCESS_KEY = config.AWS_SECRET_ACCESS_KEY;
@@ -100,7 +100,6 @@ function main() {
 		if (state === true)
 			setTimeout(shutdownFlash, config.DELAY_SHUTDOWN_FLASH);
 	}).catch((err) => {
-		console.log("main reject:");
 		console.error(err);
 	});
 }
