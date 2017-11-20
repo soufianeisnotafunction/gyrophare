@@ -1,25 +1,23 @@
+const config = require('./config').config;
+
 const Gpio = require('onoff').Gpio;
 const aws = require("aws-sdk");
 const isRPi = process.env.IS_RPI || true;
 
-const ON = 0;
-const OFF = 1;
-
 if (isRPi === true) {
-	const gyrophare = new Gpio(18, 'out');
-	gyrophare.writeSync(OFF);	
+	const gyrophare = new Gpio(config.GPIO_FLASH, 'out')
+	gyrophare.writeSync(config.STATE_OFF);
 }
 
-process.env.AWS_ACCESS_KEY_ID = "AKIAIZV4BA4NCQ26OXQA";
-process.env.AWS_SECRET_ACCESS_KEY = "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";
+const thingEndpoint = config.THING_ENDPOINT;
+const thingName = config.THING_NAME;
 
-const thingEndpoint = "a3e6rc2fumc5un.iot.eu-west-1.amazonaws.com";
-const thingName = "gyrophare";
+process.env.AWS_ACCESS_KEY_ID = config.AWS_ACCESS_KEY_ID;
+process.env.AWS_SECRET_ACCESS_KEY = config.AWS_SECRET_ACCESS_KEY;
 
 aws.config.update({
-	region: "eu-west-1"
+	region: config.AWS_REGION
 });
-
 const iotdata = new aws.IotData({
 	endpoint: thingEndpoint
 });
@@ -32,9 +30,9 @@ function getShadow(params) {
 	return new Promise((resolve, reject) => {
 		iotdata.getThingShadow(params, function(err, data) {
 			if (err) {
+				console.log(err);
 				reject(err);
 			} else {
-				console.log(JSON.parse(data.payload));
 				var data = JSON.parse(data.payload);
 
 				if (data.state.delta === undefined)
@@ -72,7 +70,7 @@ function updateShadow(state) {
 function shutdownFlash() {
 	console.log('Shutdown flash');
 	if (isRPi === true)
-		gyrophare.writeSync(OFF);
+		gyrophare.writeSync(config.STATE_OFF);
 	
 	iotdata.updateThingShadow({
 		payload: JSON.stringify({
@@ -98,12 +96,13 @@ function main() {
 	getShadow(getParams).then((state) => {
 		console.log(`Gyrophare flashing state: ${state}`);
 		if (isRPi === true)
-			gyrophare.writeSync(state === true ? ON : OFF);
+			gyrophare.writeSync(state === true ? config.STATE_ON : config.STATE_OFF);
 		if (state === true)
-			setTimeout(shutdownFlash, 6000);
-	}, (err) => {
-		console.error(err.message);
+			setTimeout(shutdownFlash, config.DELAY_SHUTDOWN_FLASH);
+	}).catch((err) => {
+		console.log("main reject:");
+		console.error(err);
 	});
 }
 
-setInterval(main, 5000);
+setInterval(main, config.DELAY_POLLING);
