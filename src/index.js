@@ -1,107 +1,69 @@
-const config = require('./config').config;
+const config = require('./config/config').config;
+const flashUtils = require('./flashUtils');
+const awsIot = require('aws-iot-device-sdk');
 
-const isRPi = process.env.IS_RPI || true;
-const thingEndpoint = config.THING_ENDPOINT;
 const thingName = config.THING_NAME;
 
-const Gpio = require('onoff').Gpio;
-const aws = require("aws-sdk");
-
-if (isRPi === true) {
-	const gyrophare = new Gpio(config.GPIO_FLASH, 'out')
-	gyrophare.writeSync(config.STATE_OFF);
-}
-
-process.env.AWS_ACCESS_KEY_ID = config.AWS_ACCESS_KEY_ID;
-process.env.AWS_SECRET_ACCESS_KEY = config.AWS_SECRET_ACCESS_KEY;
-
-aws.config.update({
-	region: config.AWS_REGION
-});
-const iotdata = new aws.IotData({
-	endpoint: thingEndpoint
+var thingShadows = awsIot.thingShadow({
+    keyPath: config.KEY_PATH,
+    certPath: config.CERT_PATH,
+    caPath: config.CA_PATH,
+    clientId: thingName,
+    host: config.THING_ENDPOINT
 });
 
-const getParams = {
-	thingName
-};
+var isSetup = false;
 
-function getShadow(params) {
-	return new Promise((resolve, reject) => {
-		iotdata.getThingShadow(params, function(err, data) {
-			if (err) {
-				console.log(err);
-				reject(err);
-			} else {
-				var data = JSON.parse(data.payload);
+flashUtils.setState(flashUtils.getState(false));
 
-				if (data.state.delta === undefined)
-					return resolve(data.state.reported.flashing);
-
-				var state = data.state.delta.flashing;
-
-				updateShadow(state);
-
-				console.log(`Delta flashing state: ${state}`);
-				resolve(state);
-			}
-		});
-	});
-}
-
-function updateShadow(state) {
-    iotdata.updateThingShadow({
-		payload: JSON.stringify({
-			state: {
-				reported: {
-					flashing: state
-				}
-			}
-		}),
-		thingName
-	}, function (err, data) {
-		if (err) 
-			console.log(err, err.stack);
-		else 
-			console.log("Shadow updated");
+thingShadows
+ .on('connect', function() {
+    console.log('connect');
+    thingShadows.register(thingName, {}, function () {
+        console.log(thingShadows.get(thingName));
     });
-}
-
-function shutdownFlash() {
-	console.log('Shutdown flash');
-	if (isRPi === true)
-		gyrophare.writeSync(config.STATE_OFF);
-	
-	iotdata.updateThingShadow({
-		payload: JSON.stringify({
-			state: {
-				desired: {
-					flashing: false
-				},
-				reported: {
-					flashing: false
-				}
-			}
-		}),
-		thingName
-	}, function (err, data) {
-		if (err) 
-			console.log(err, err.stack);
-		else 
-			console.log("Shadow updated");
+    
+    thingShadows.on('delta', function(thingNameDelta, stateObject) {
+        flashUtils.setState(flashUtils.getState(stateObject.state.flashing));
+        thingShadows.update(thingName, {"state": {"reported": {"flashing": stateObject.state.flashing}}});
+       
+        if (stateObject.state.flashing === true) {
+            setTimeout(function() {
+                flashUtils.setState(flashUtils.getState(false));
+                thingShadows.update(thingName, {"state": {"desired": {"flashing": false}, "reported": {"flashing": false}}});
+            }, 5000);
+        }
+        console.log('delta received delta on '+thingNameDelta+': '+
+                   JSON.stringify(stateObject));
     });
-}
 
-function main() {
-	getShadow(getParams).then((state) => {
-		console.log(`Gyrophare flashing state: ${state}`);
-		if (isRPi === true)
-			gyrophare.writeSync(state === true ? config.STATE_ON : config.STATE_OFF);
-		if (state === true)
-			setTimeout(shutdownFlash, config.DELAY_SHUTDOWN_FLASH);
-	}).catch((err) => {
-		console.error(err);
-	});
-}
+    thingShadows.on('status', function(name, status, clientToken, stateObject) {
+        if (isSetup === true)
+            return;
 
-setInterval(main, config.DELAY_POLLING);
+        console.log('STATUS:', name, status, clientToken, JSON.stringify(stateObject), 'END STATUS');
+
+        console.log(stateObject.state.reported.flashing);
+        var state = false;
+
+        if (stateObject.state.delta !== undefined)
+            state = stateObject.state.delta.flashing;
+        else
+            state = stateObject.state.reported.flashing || false;
+
+        console.log("setup : " + state);
+
+        flashUtils.setState(flashUtils.getState(state));
+        thingShadows.update(thingName, {"state": {"reported": {"flashing": state}}});
+
+        if (state === true) {
+            console.log('setTimeout');
+            setTimeout(function() {
+                flashUtils.setState(flashUtils.getState(false));
+                thingShadows.update(thingName, {"state": {"desired": {"flashing": false}}});
+            }, 5000);
+        }
+
+        isSetup = true;
+    });
+});

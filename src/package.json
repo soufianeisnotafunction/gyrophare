@@ -7,7 +7,7 @@
   "author": "",
   "license": "Private",
   "dependencies": {
-    "aws-sdk": "^2.142.0",
+    "aws-iot-device-sdk": "^2.1.0",
     "onoff": "^1.1.8"
   }
 }
