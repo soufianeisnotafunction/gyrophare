@@ -2,18 +2,20 @@ const aws = require("aws-sdk");
 const thingEndpoint = process.env.ENDPOINT;
 const thingName = process.env.THINGNAME;
 
+const endpoint = "iot.eu-west-1.amazonaws.com";
+
+const iot = new aws.Iot({
+    endpoint: endpoint,
+    region: 'eu-west-1'
+});
+
 const iotdata = new aws.IotData({
     endpoint: thingEndpoint
 });
 
 // ************** HELPER FUNCTIONS  ************** //
-
-const getParams = {
-    thingName
-};
-
-function updateShadow(state) {
-    const updateParams = {
+function updateShadow(name, state) {
+    iotdata.updateThingShadow({
         payload: JSON.stringify({
             state: {
                 desired: {
@@ -21,18 +23,33 @@ function updateShadow(state) {
                 }
             }
         }),
-        thingName
-    };
-    
-    iotdata.updateThingShadow(updateParams, function (err, data) {
+        thingName: name
+    }, function (err, data) {
         if (err) console.log(err, err.stack);
-        else console.log("Shadow updated to require beacon to flash");
+        else console.log("Shadow updated");
     });
 }
 
 exports.handler = (event, context, callback) => {
 // ************** GETTING AND UPDATING THE SHADOW  ************** //
+    iot.listThings({thingTypeName: 'gyrophare-gyrophare'}, function(err, data) {
+        var things = [];
+        if (err) {
+            console.log(err);
+            return (callback("error list things", null));
+        } else
+            things = data.things;
 
-    updateShadow(true);
-    callback(null, "shadow updated");
+        if(event.clickType){
+            things.forEach((thing) => {
+                updateShadow(thing.thingName, false);
+            });
+        } else {
+            things.forEach((thing) => {
+                updateShadow(thing.thingName, true);
+            });
+        }
+        
+        callback(null, "shadow updated"); 
+    }); 
 };
