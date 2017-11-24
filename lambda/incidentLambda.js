@@ -1,6 +1,5 @@
 const aws = require("aws-sdk");
 const thingEndpoint = process.env.ENDPOINT;
-const thingName = process.env.THINGNAME;
 
 const endpoint = "iot.eu-west-1.amazonaws.com";
 

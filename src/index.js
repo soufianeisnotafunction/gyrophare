@@ -31,7 +31,7 @@ thingShadows
             setTimeout(function() {
                 flashUtils.setState(flashUtils.getState(false));
                 thingShadows.update(thingName, {"state": {"desired": {"flashing": false}, "reported": {"flashing": false}}});
-            }, 5000);
+            }, 120000);
         }
         console.log('delta received delta on '+thingNameDelta+': '+
                    JSON.stringify(stateObject));
@@ -61,7 +61,7 @@ thingShadows
             setTimeout(function() {
                 flashUtils.setState(flashUtils.getState(false));
                 thingShadows.update(thingName, {"state": {"desired": {"flashing": false}}});
-            }, 5000);
+            }, 120000);
         }
 
         isSetup = true;
