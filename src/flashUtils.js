@@ -4,7 +4,7 @@ const Gpio = require('onoff').Gpio;
 const flash = config.IS_RPI === true ? new Gpio(config.GPIO_FLASH, 'out') : undefined;
 
 const setState = function(state) {
-    console.log('Change State: ' + state);
+    console.log('Change State: ' + (state === config.STATE_ON ? "ON" : "OFF"));
 
     if (flash === undefined)
         return;

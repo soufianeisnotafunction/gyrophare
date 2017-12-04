@@ -2,7 +2,7 @@
 
 - name: Remove sshpwd.sh
   file:
-    path: /etc/profile.d/sshpwd.sh
+    path:   
     state: absent
 
 - name: Add ssh to systemd

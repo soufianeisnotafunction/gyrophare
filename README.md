@@ -1,32 +1,35 @@
-Installer raspbian lite (sans desktop)
-Installer raspberrypi-ui-mods (interface graphique)
+# TODO:
 
-Supprimer utilisateur pi
-Créer utilisateur gekko
-    password: Gekko2017@
+- Gérer si certificat invalide
 
-Définir mot de passe pour root
-    password: Gekko2017@
+# Materiels:
 
+## 1
 
-Lancer le playbook ansible:
+raspberry:
+    - number: 1716
+    - ethernet MAC: b8-27-eb-f0-2f-ee
+    - wifi MAC: b8-27-eb-a5-7a-bb
 
-Télécharger les certificats IOT de l'objet et le mettre dans le dossier 'src/config'
+button:
+    - DSN: G030PT0354278UJN
 
-Définir l'ip de la raspberry dans le fichier 'ansible/hosts'
+certificate:
+    - name: f6e0a61e815429c32048f0b1d727382c0652effe1e8e29778fb3c6d00011bdd4
 
-```
-    cd ansible
-    ansible-playbook -i hosts gyrophare.yml --ask-pass --ask-become-pass
-```
+## 2
 
+raspberry:
+    - number: 1719
+    - ethernet MAC: b8-27-eb-1f-4f-5c
+    - wifi MAC:  b8-27-eb-4a-1a-09 
 
-Pour tester le code en local définir la variable d'environnement:
+button:
+    - DSN: G030PT032154HXF7
 
-```
-    export IS_RPI=false
-```
+certificate:
+    - name: acfaea55096078af4699ae794cf30f7930197ad1da3fa94ba2c20c863bd8525b
 
+# Liens
 
-Mettre le delais dans le shadow
-Configurer les boutons
+Config Wifi: https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md

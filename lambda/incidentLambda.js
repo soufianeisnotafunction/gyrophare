@@ -1,5 +1,6 @@
 const aws = require("aws-sdk");
 const thingEndpoint = process.env.ENDPOINT;
+const delay = process.env.DELAY || 120 * 1000;
 
 const endpoint = "iot.eu-west-1.amazonaws.com";
 
@@ -18,14 +19,17 @@ function updateShadow(name, state) {
         payload: JSON.stringify({
             state: {
                 desired: {
-                    flashing: state
+                    flash: state,
+                    shutdownAt: Date.now() + parseInt(delay)
                 }
             }
         }),
         thingName: name
     }, function (err, data) {
-        if (err) console.log(err, err.stack);
-        else console.log("Shadow updated");
+        if (err) 
+            console.log(err, err.stack);
+        else 
+            console.log("Shadow updated");
     });
 }
 
