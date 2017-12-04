@@ -22,13 +22,14 @@ certificate:
 raspberry:
     - number: 1719
     - ethernet MAC: b8-27-eb-1f-4f-5c
-    - wifi MAC:  b8-27-eb-4a-1a-09 
+    - wifi MAC: b8-27-eb-4a-1a-09 
+    - certificate: 942dd42f7724b38880f857eb5924a6a22b8b86642e54ba2da757126c7a9ffd07
 
 button:
     - DSN: G030PT032154HXF7
+    - IOT name: iotbutton_G030PT032154HXF7
+    - certificate: 28ee686295216730a7cd450f296108d55026d1cf643e46fe023e8a1c55ea4fed
 
-certificate:
-    - name: acfaea55096078af4699ae794cf30f7930197ad1da3fa94ba2c20c863bd8525b
 
 # Liens
 

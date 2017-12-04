@@ -17,9 +17,7 @@ function updateShadow(name, state) {
     iotdata.updateThingShadow({
         payload: JSON.stringify({
             state: {
-                desired: {
-                    flashing: state
-                }
+                desired: state
             }
         }),
         thingName: name
@@ -43,11 +41,11 @@ exports.handler = (event, context, callback) => {
 
         if(event.clickType === "SINGLE"){
             things.forEach((thing) => {
-                updateShadow(thing.thingName, false);
+                updateShadow(thing.thingName, {flash: false});
             });
-        } else {
+        } else if (event.clickType === "LONG") {
             things.forEach((thing) => {
-                updateShadow(thing.thingName, true);
+                updateShadow(thing.thingName, {flash: true, shutdownAt: Date.now() + (10 * 1000)});
             });
         }
         
