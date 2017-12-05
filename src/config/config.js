@@ -1,6 +1,6 @@
 exports.config = {
-    STATE_ON: 0,
-    STATE_OFF: 1,
+    STATE_ON: 1,
+    STATE_OFF: 0,
     GPIO_FLASH: 18,
     AWS_REGION: "eu-west-1",
     THING_ENDPOINT: "a3e6rc2fumc5un.iot.eu-west-1.amazonaws.com",

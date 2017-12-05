@@ -16,12 +16,9 @@ var isSetup = false;
 
 thingShadows.on('connect', function() {
     var gyrophare = new Gyrophare(thingName, thingShadows);
-    console.log(gyrophare);
 
     console.log('Connect');
-    thingShadows.register(thingName, {}, function () {
-        console.log(thingShadows.get(thingName));
-    });
+    thingShadows.register(thingName, {}, function () {});
    
     thingShadows.on('delta', function(thingNameDelta, stateObject) {
         gyrophare.updateStates(stateObject.state, thingShadows);

@@ -9,7 +9,7 @@ const setState = function(state) {
     if (flash === undefined)
         return;
 
-    flash.write(state);
+    flash.writeSync(state);
 };
 
 const getState = function(isFlashing) {
