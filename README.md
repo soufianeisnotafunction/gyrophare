@@ -14,8 +14,8 @@ raspberry:
 
 button:
     - DSN: G030PT0354278UJN
-    - IOT name:
-    - certificate:
+    - IOT name: iotbutton_G030PT0354278UJN
+    - certificate: 11410e9c3298026a3915b33025748693c2a949a4df8600a88bdb8639782ce4a7
     - wifi MAC: 34:d2:70:96:a4:a9
 
 ## 2

@@ -18,8 +18,10 @@ thingShadows.on('connect', function() {
     var gyrophare = new Gyrophare(thingName, thingShadows);
 
     console.log('Connect');
-    thingShadows.register(thingName, {}, function () {});
-   
+    thingShadows.register(thingName, {}, function () {
+        thingShadows.get(thingName);
+    });
+
     thingShadows.on('delta', function(thingNameDelta, stateObject) {
         gyrophare.updateStates(stateObject.state, thingShadows);
     });

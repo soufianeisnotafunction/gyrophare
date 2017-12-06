@@ -17,10 +17,11 @@ class Gyrophare {
     updateStates(newStates, thingShadows) {
         this.states = Object.assign(this.states, newStates);
         console.log(this.states);
-        if (thingShadows !== undefined)
+        if (thingShadows !== undefined) {
             thingShadows.update(this.thingName, {"state": {"reported": this.states, "desired": this.states}}, function() {
                 console.log("Shadow updated");
             });
+        }
        
         this.update(thingShadows);
     }
