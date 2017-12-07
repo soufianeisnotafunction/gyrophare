@@ -14,6 +14,13 @@ const iotdata = new aws.IotData({
 
 // ************** HELPER FUNCTIONS  ************** //
 function updateShadow(name, state) {
+    console.log({
+        at: Date.now(),
+        name: name,
+        flash: state.flash,
+        shutdownAt: state.shutdownAt || 0
+    });
+    
     iotdata.updateThingShadow({
         payload: JSON.stringify({
             state: {
@@ -22,13 +29,18 @@ function updateShadow(name, state) {
         }),
         thingName: name
     }, function (err, data) {
-        if (err) console.log(err, err.stack);
-        else console.log("Shadow updated");
+        if (err) 
+            console.log(err, err.stack);
     });
 }
 
 exports.handler = (event, context, callback) => {
 // ************** GETTING AND UPDATING THE SHADOW  ************** //
+    console.log({
+        clickType: event.clickType,
+        dsn: event.serialNumber
+    });
+    
     iot.listThings({attributeName: 'associateButton', attributeValue: event.serialNumber}, function(err, data) {
         var things = [];
         if (err) {
@@ -36,9 +48,7 @@ exports.handler = (event, context, callback) => {
             return (callback("error list things", null));
         } else
             things = data.things;
-            
-        console.log(things);
-
+        
         if(event.clickType === "SINGLE"){
             things.forEach((thing) => {
                 updateShadow(thing.thingName, {flash: false});

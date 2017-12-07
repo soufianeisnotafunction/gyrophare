@@ -15,12 +15,19 @@ const iotdata = new aws.IotData({
 
 // ************** HELPER FUNCTIONS  ************** //
 function updateShadow(name, state) {
+    var shutdownAt = Date.now() + parseInt(delay);
+    console.log({
+        at: Date.now(),
+        name: name,
+        flash: state,
+        shutdownAt: shutdownAt
+    });
     iotdata.updateThingShadow({
         payload: JSON.stringify({
             state: {
                 desired: {
                     flash: state,
-                    shutdownAt: Date.now() + parseInt(delay)
+                    shutdownAt: shutdownAt
                 }
             }
         }),
@@ -28,8 +35,6 @@ function updateShadow(name, state) {
     }, function (err, data) {
         if (err) 
             console.log(err, err.stack);
-        else 
-            console.log("Shadow updated");
     });
 }
 
@@ -38,7 +43,7 @@ exports.handler = (event, context, callback) => {
     iot.listThings({thingTypeName: 'gyrophare-gyrophare'}, function(err, data) {
         var things = [];
         if (err) {
-            console.log(err);
+            console.log("error list things:", err);
             return (callback("error list things", null));
         } else
             things = data.things;
