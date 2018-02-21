@@ -1,7 +1,3 @@
-# TODO:
-
-- Gérer si certificat invalide
-
 # Materiels:
 
 ## 1
