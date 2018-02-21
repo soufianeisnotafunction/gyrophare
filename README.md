@@ -16,7 +16,7 @@ button:
     - IOT name: iotbutton_G030PT0354278UJN
     - wifi MAC: 34:d2:70:96:a4:a9
 
-## 2
+## 2
 
 raspberry:
     - number: 1719
